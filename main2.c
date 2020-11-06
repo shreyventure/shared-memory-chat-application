@@ -1,3 +1,6 @@
+// gcc `pkg-config --cflags gtk+-3.0` -o o.out main2.c `pkg-config --libs gtk+-3.0`
+// ./o.out
+
 #include <signal.h> 
 #include <stdio.h> 
 #include <stdlib.h> 
