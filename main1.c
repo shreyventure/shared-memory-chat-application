@@ -33,8 +33,6 @@ void handler(int signum)
 { 
 	// if signum is SIGUSR1, then user 1 is receiving a message from user2 
 	if (signum == SIGUSR1) { 
-		g_print("Received From User2: "); 
-		puts(shmptr->buff); 
 
         GtkWidget *label1;
         GObject *displayMessages;
@@ -64,7 +62,6 @@ static void sendMessage (GtkWidget *widget, gpointer data)
     message = (GtkEntry *)gtk_builder_get_object (builder, "textInput");
 
     sprintf(shmptr->buff, "%8s\n", gtk_entry_get_text(message)); 
-    puts(shmptr->buff);
 
     displayMessages = gtk_builder_get_object(builder, "fixedLayout");
     
@@ -112,13 +109,16 @@ int main (int   argc, char *argv[])
     /* Connect signal handlers to the constructed widgets. */
     window = gtk_builder_get_object (builder, "window");
     g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+    g_print("[INFO] UI initialised.\n");
 
     button = gtk_builder_get_object (builder, "SendButton");
     g_signal_connect (button, "clicked", G_CALLBACK (sendMessage), NULL);
 
 	int key = 1011; 
 	shmid = shmget(key, sizeof(struct memory), IPC_CREAT | 0666); 
+    g_print("[INFO] Memory segment created.\n");
 	shmptr = (struct memory*)shmat(shmid, NULL, 0); 
+    g_print("[INFO] Memory pointer initialised.\n");
 
 	shmptr->pid1 = pid; 
 	shmptr->status = NotReady; 
@@ -127,7 +127,7 @@ int main (int   argc, char *argv[])
 	signal(SIGUSR1, handler); 
 
     gtk_main ();
-    g_print("End");
+    g_print("[INFO] Process terminated.\n");
 
 	shmdt((void*)shmptr); 
 	shmctl(shmid, IPC_RMID, NULL); 
