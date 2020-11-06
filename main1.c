@@ -57,18 +57,12 @@ void handler(int signum)
 
 static void sendMessage (GtkWidget *widget, gpointer data)
 {
-    if (shmptr->status != USER1) 
-        return; 
-
     GtkEntry *message;
     GtkWidget *label, *label1;
     GObject *displayMessages;
 
     message = (GtkEntry *)gtk_builder_get_object (builder, "textInput");
-    // const gchar *text = gtk_entry_get_text(message);
-    // puts(text);
 
-    // shmptr->buff = gtk_entry_get_text(message);
     sprintf(shmptr->buff, "%8s\n", gtk_entry_get_text(message)); 
     puts(shmptr->buff);
 
@@ -78,7 +72,6 @@ static void sendMessage (GtkWidget *widget, gpointer data)
     const gchar *newMessage = g_strconcat(me, gtk_entry_get_text(message), NULL);
 
     label = gtk_label_new (NULL);
-    // gtk_label_set_text((GtkLabel *)label, gtk_entry_get_text(message));
     gtk_label_set_text((GtkLabel *)label, newMessage);
 
     gtk_entry_set_text(message, "");
@@ -93,15 +86,11 @@ static void sendMessage (GtkWidget *widget, gpointer data)
     gtk_widget_show_all(label);
     i=i+30;
 
-    // fgets(shmptr->buff, 100, stdin);
-    shmptr->status = USER2; 
+    // shmptr->status = USER2; 
 
     // sending the message to user2 using kill function 
     kill(shmptr->pid2, SIGUSR2);
     
-    // while (shmptr->status != USER1) 
-    //     continue; 
-    // sleep(1); 
 }
 
 int main (int   argc, char *argv[])
@@ -139,19 +128,6 @@ int main (int   argc, char *argv[])
 
     gtk_main ();
     g_print("End");
-
-	// while (1) { 
-	// 	while (shmptr->status != USER1) 
-	// 		continue; 
-	// 	sleep(1); 
-
-	// 	printf("User1: "); 
-	// 	fgets(shmptr->buff, 100, stdin); 
-	// 	shmptr->status = USER2; 
-
-	// 	// sending the message to user2 using kill function 
-	// 	kill(shmptr->pid2, SIGUSR2); 
-	// } 
 
 	shmdt((void*)shmptr); 
 	shmctl(shmid, IPC_RMID, NULL); 
